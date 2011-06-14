@@ -1,4 +1,4 @@
 name = "Environment Force"
 description = "Resets the environment to that specified in settings.php on every page load."
-core = "6.x"
+core = "7.x"
 dependencies[] = "environment"
