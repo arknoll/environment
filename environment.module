@@ -327,9 +327,9 @@ function _environment_state_options_all($reset = FALSE) {
   $workflows = environment_workflow_load();
   foreach ($workflows as $name => $workflow) {
     $options[$name] = $workflow['label'];
-    $w_opts = _environment_state_options($workflow, TRUE, '-- ', $reset);
+    $w_opts = _environment_state_options($name, TRUE, '-- ', $reset);
     $options = array_merge($options, $w_opts);
   }
-  
+
   return $options;
 }
