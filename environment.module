@@ -36,6 +36,11 @@ function environment_menu() {
     'access arguments' => array('administer site configuration'),
     'file'             => 'environment.admin.inc',
   );
+  $items['admin/config/system/environment/settings'] = array(
+    'title' => 'Environment',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
   $items['admin/config/system/environment/switch/%environment'] = array(
     'title'            => 'Environment Switch',
     'description'      => 'Switch the current environment.',
