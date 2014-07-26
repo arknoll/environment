@@ -32,6 +32,7 @@ function environment_drush_command() {
     'examples' => array(
       'drush environment-switch development' => 'Switch the environment to development.',
       'drush env-switch --force production' => 'Force the environment to switch to production even if the current environment already is production.',
+      'drush env-switch --nocacheclear production' => 'Switch environments but do not clear cache.',
     ),
     'aliases' => array('env-switch'),
   );
