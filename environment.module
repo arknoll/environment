@@ -123,7 +123,7 @@ function environment_switch($target_env, $force = FALSE) {
   $current_env = environment_current($workflow);
   $override = variable_get('environment_override', '');
 
-  if ($current_env == $target_env) {
+  if (!$force && $current_env == $target_env) {
     drupal_set_message(t("The current environment is already set to '!environment'.",
                          array('!environment' => $target_env)), 'error');
     // Since this option is only available in drush, only display it to drush users.

@@ -26,7 +26,7 @@ function environment_drush_command() {
       'target_env' => 'The target environment to which the site will be switched.',
     ),
     'options' => array(
-      '--force' => 'Whether an environment switch should be forced if the target enviornment is the same as the current environment.',
+      'force' => 'Whether an environment switch should be forced if the target enviornment is the same as the current environment.',
     ),
     'examples' => array(
       'drush environment-switch development' => 'Switch the environment to development.',
