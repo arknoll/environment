@@ -36,13 +36,24 @@ function environment_requirements($phase) {
         'severity'    => REQUIREMENT_ERROR,
       );
     }
-    
+
     $environment = (array) variable_get('environment', array());
     $env_override = (array) variable_get('environment_override', array());
     $workflows = environment_workflow_load();
 
+    if (empty($environment)) {
+      $requirements['environment'] = array(
+        'title'       => $t('Environment'),
+        'description' => $t('The environment is not set in your system.', array()),
+        'value'       => $t('Invalid State'),
+        'severity'    => REQUIREMENT_WARNING,
+      );
+    }
+
     foreach ($workflows as $name => $workflow) {
-      $status = environment_load($environment[$name]);
+      if (!empty($environment[$name])) {
+        $status = environment_load($environment[$name]);
+      }
       $key = empty($name) ? 'default' : $name;
       if (isset($env_override[$name]) && $env_override[$name] != $environment['name']) {
         $requirements['environment_override_' . $key] = array(
@@ -52,7 +63,7 @@ function environment_requirements($phase) {
           'severity'    => REQUIREMENT_ERROR,
         );
       }
-      if ($environment[$name] && empty($status)) {
+      if (!empty($environment[$name]) && empty($status)) {
         $requirements['environment_' . $key] = array(
           'title'       => $t('Environment'),
           'description' => $t("The current environment '%environment' is no longer defined in your system.", array('%environment' => $environment)),
@@ -60,7 +71,7 @@ function environment_requirements($phase) {
           'severity'    => REQUIREMENT_WARNING,
         );
       }
-      elseif ($environment[$name]) {
+      elseif (!empty($environment[$name])) {
         $environment = environment_load($environment[$name]);
         $requirements['environment_' . $key] = array(
           'title'       => $t('Environment'),

@@ -116,7 +116,7 @@ function drush_environment_switch($target_env = NULL) {
  * @param $workflow
  *  Optional; specify a single workflow whose environment to check. Otherwise
  *  show all states.
- * 
+ *
  * @return
  *  Array of strings describing the environment(s).
  */
@@ -127,16 +127,22 @@ function environment_drush_render_current($workflow = NULL) {
   }
 
   $items = array();
-  foreach ($states as $state) {
-    if (is_null($workflow) || $state['workflow'] == $workflow) {
-      if (!drush_get_context('DRUSH_PIPE')) {
-        $items[] = array(environment_drush_render_environment($state, is_null($workflow), TRUE));
-      }
-      else {
-        $items[] = $state['name'];
+  if (empty($states)) {
+    drush_log('Your site environment is not set.', 'warning');
+  }
+  else {
+    foreach ($states as $state) {
+      if (is_null($workflow) || $state['workflow'] == $workflow) {
+        if (!drush_get_context('DRUSH_PIPE')) {
+          $items[] = array(environment_drush_render_environment($state, is_null($workflow), TRUE));
+        }
+        else {
+          $items[] = $state['name'];
+        }
       }
     }
   }
+
 
   return $items;
 }
@@ -154,7 +160,7 @@ function environment_drush_render_current($workflow = NULL) {
  * @param $verbose
  *  Optional; defaults to FALSE. If TRUE, will include the environment
  *  description.
- * 
+ *
  * @return
  *  String describing the specified environment.
  */
