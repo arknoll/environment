@@ -39,7 +39,7 @@ function environment_requirements($phase) {
 
     $environment = (array) variable_get('environment', array());
     $env_override = (array) variable_get('environment_override', array());
-    $workflows = environment_workflow_load();
+    $workflows = environment_load_workflow();
 
     if (empty($environment)) {
       $requirements['environment'] = array(

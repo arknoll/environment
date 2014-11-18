@@ -172,7 +172,7 @@ function environment_drush_render_environment($state, $show_workflow = TRUE, $ve
   $prefix = '';
 
   if ($show_workflow) {
-    $workflows = environment_workflow_load();
+    $workflows = environment_load_workflow();
     $prefix .= count($workflows) > 1 ? $workflows[$state['workflow']]['label'] . ' : ' : '';
   }
 

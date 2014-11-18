@@ -28,17 +28,17 @@ function environment_admin_settings() {
       '#title' => t('Environment state'),
       '#type' => 'fieldset',
       '#tree' => TRUE,
-    );    
-    foreach (environment_workflow_load() as $name => $workflow) {
+    );
+    foreach (environment_load_workflow() as $name => $workflow) {
       $default = isset($env_current[$name]) ? $env_current[$name] : '';
       $form['environment'][$name] = array(
         '#title' => t('@workflow environment workflow', array('@workflow' => $workflow['label'])),
-        '#description'   => $workflow['description'], 
+        '#description'   => $workflow['description'],
         '#type'          => 'select',
         '#options'       => _environment_state_options($name),
         '#default_value' => $default,
       );
-      
+
       if (!$default) {
         drupal_set_message(t('Not in a valid state for the @workflow workflow. Saving this form will put it into a valid state if one exists.', array('@workflow' => $workflow['label'])), 'warning');
       }
@@ -65,7 +65,7 @@ function environment_switch_environment_submit($form, &$form_state) {
         if ($result) {
           $original = environment_load($form['environment'][$element]['#default_value']);
           $new = environment_load($form_state['values']['environment'][$element]);
-          $workflow = environment_workflow_load($element);
+          $workflow = environment_load_workflow($element);
           drupal_set_message(t("Successfully switched @workflow workflow from the '@original' to the '@new' environment.",
                                array(
                                 '@workflow' => $workflow['label'],

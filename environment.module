@@ -259,7 +259,7 @@ function environment_load($env = NULL, $reset = FALSE) {
  *
  * @return Array
  */
-function environment_workflow_load($name = NULL, $reset = FALSE) {
+function environment_load_workflow($name = NULL, $reset = FALSE) {
   static $workflows;
 
   if (empty($workflows) || $reset) {
@@ -315,7 +315,7 @@ function _environment_state_options($workflow = 'default', $prefix = '', $reset 
 function _environment_state_options_all($reset = FALSE) {
   $options = array();
 
-  $workflows = environment_workflow_load();
+  $workflows = environment_load_workflow();
   foreach ($workflows as $name => $workflow) {
     $options[$name] = $workflow['label'];
     $w_opts = _environment_state_options($name, TRUE, '-- ', $reset);
@@ -331,7 +331,7 @@ function _environment_state_options_all($reset = FALSE) {
 function environment_token_list($type = 'all') {
   $tokens = array();
   if ($type == 'all' || $type == 'global') {
-    foreach (environment_workflow_load() as $name => $workflow) {
+    foreach (environment_load_workflow() as $name => $workflow) {
       $tokens['global']['environment_' . $name] = t('The current environment state for @title workflow.', array('@title' => $workflow['label']));
       $tokens['global']['environment_' . $name . '-label'] = t('The human-readable version of the current environment state for @title workflow.', array('@title' => $workflow['label']));
     }
@@ -345,7 +345,7 @@ function environment_token_list($type = 'all') {
 function environment_token_values($type, $object = NULL, $options = array()) {
   $values = array();
   if ($type == 'global') {
-    foreach (environment_workflow_load() as $name => $workflow) {
+    foreach (environment_load_workflow() as $name => $workflow) {
       $state = environment_current($name, NULL, TRUE);
       $values['environment_' . $name] = $state['name'];
       $values['environment_' . $name . '-label'] = $state['label'];
