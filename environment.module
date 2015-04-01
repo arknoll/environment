@@ -125,7 +125,9 @@ function environment_switch($target_env, $force = FALSE, $clear_cache = TRUE) {
 
   if (!$force && $current_env == $target_env) {
     drupal_set_message(t("The current environment is already set to '!environment'.",
-                         array('!environment' => $target_env)), 'error');
+                         array('!environment' => $target_env)), 'notice');
+
+   $result = TRUE;
     // Since this option is only available in drush, only display it to drush users.
     if (function_exists('drush_print')) {
       drush_print("To force the environment switch to run anyway, use the '--force' flag.");
