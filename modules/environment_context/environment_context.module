@@ -1,22 +1,22 @@
 <?php
 /**
  * @file
- *  Describe context plugins for Environment Context module.
+ * Describe context plugins for Environment Context module.
  */
 
 /**
- * Implementation of hook_init().
+ * Implements hook_init().
  */
 function environment_context_init() {
   // Trigger environment context condition.
   if (module_exists('context') && function_exists('context_get_plugin')
       && $plugin = context_get_plugin('condition', 'environment')) {
-    $plugin->execute((array)variable_get('environment', array()));
+    $plugin->execute((array) variable_get('environment', array()));
   }
 }
 
 /**
- * Implementation of hook_ctools_plugin_api().
+ * Implements hook_ctools_plugin_api().
  */
 function environment_context_ctools_plugin_api($module, $api) {
   if ($module == 'context' && $api == 'plugins') {
@@ -25,7 +25,7 @@ function environment_context_ctools_plugin_api($module, $api) {
 }
 
 /**
- * Implementation of hook_context_registry().
+ * Implements hook_context_registry().
  */
 function environment_context_context_registry() {
   $registry = array();
@@ -40,13 +40,13 @@ function environment_context_context_registry() {
 }
 
 /**
- * Implementation of hook_context_plugins().
+ * Implements hook_context_plugins().
  */
 function environment_context_context_plugins() {
- $plugins = array();
+  $plugins = array();
   $plugins['environment_context_condition'] = array(
     'handler' => array(
-      'path' => drupal_get_path('module', 'environment_context') .'/plugins',
+      'path' => drupal_get_path('module', 'environment_context') . '/plugins',
       'file' => 'environment_context_condition.inc',
       'class' => 'environment_context_condition',
       'parent' => 'context_condition',

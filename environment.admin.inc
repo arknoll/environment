@@ -1,10 +1,15 @@
 <?php
-
 /**
  * @file
- * Settings for Environment module
+ * Settings for Environment module.
  */
 
+/**
+ * Environment admin form.
+ *
+ * @return array
+ *   admin form.
+ */
 function environment_admin_settings() {
   $form = array();
 
@@ -68,10 +73,11 @@ function environment_switch_environment_submit($form, &$form_state) {
           $workflow = environment_load_workflow($element);
           drupal_set_message(t("Successfully switched @workflow workflow from the '@original' to the '@new' environment.",
                                array(
-                                '@workflow' => $workflow['label'],
-                                '@original' => $original['label'],
-                                '@new' => $new['label'],
-                               ))
+                                 '@workflow' => $workflow['label'],
+                                 '@original' => $original['label'],
+                                 '@new' => $new['label'],
+                               )
+                              )
                             );
         }
       }
@@ -82,8 +88,8 @@ function environment_switch_environment_submit($form, &$form_state) {
 /**
  * Environment switch form callback.
  *
- * @param $environment
- *  The environment being switched to.
+ * @param string $environment
+ *   The environment being switched to.
  */
 function environment_switch_confirm(&$form_state, $environment) {
   if (empty($environment)) {

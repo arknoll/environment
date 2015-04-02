@@ -1,11 +1,11 @@
 <?php
-
 /**
- * @file Executes the environment_switch capabilities
+ * @file
+ * Executes the environment_switch capabilities.
  */
 
 /**
- * Implementation of hook_drush_command().
+ * Implements hook_drush_command().
  */
 function environment_drush_command() {
   $items = array();
@@ -41,23 +41,26 @@ function environment_drush_command() {
 }
 
 /**
- * Implementation of hook_drush_help().
+ * Implements hook_drush_help().
  */
 function environment_drush_help($section) {
   switch ($section) {
     case 'meta:environment:title':
       return dt('Environment commands');
+
     case 'meta:environment:summary':
       return dt('Review and control the site environment.');
+
     case 'drush:environment':
       return dt("Shows the current environment.");
+
     case 'drush:environment-switch':
       return dt("Switches the environment to the target environment.");
   }
 }
 
 /**
- * Implementation of drush_hook_COMMAND for environment.
+ * Implements drush_hook_COMMAND for environment.
  */
 function drush_environment_show($workflow = NULL) {
   $func = drush_get_context('DRUSH_PIPE') ? 'drush_print_pipe' : 'drush_print_table';
@@ -65,7 +68,7 @@ function drush_environment_show($workflow = NULL) {
 }
 
 /**
- * Implementation of drush_hook_COMMAND_validate() for environment_switch.
+ * Implements drush_hook_COMMAND_validate() for environment_switch.
  */
 function drush_environment_switch_validate($target_env = NULL) {
   $environments = environment_load();
@@ -75,7 +78,7 @@ function drush_environment_switch_validate($target_env = NULL) {
 }
 
 /**
- * Implementation of drush_hook_COMMAND for environment_switch.
+ * Implements drush_hook_COMMAND for environment_switch.
  */
 function drush_environment_switch($target_env = NULL) {
   if ($target_env && !array_key_exists($target_env, environment_load())) {
@@ -116,12 +119,12 @@ function drush_environment_switch($target_env = NULL) {
 /**
  * Render all current environment states with full description.
  *
- * @param $workflow
- *  Optional; specify a single workflow whose environment to check. Otherwise
- *  show all states.
+ * @param string $workflow
+ *   Optional; specify a single workflow whose environment to check. Otherwise
+ *   show all states.
  *
- * @return
- *  Array of strings describing the environment(s).
+ * @return array
+ *   Array of strings describing the environment(s).
  */
 function environment_drush_render_current($workflow = NULL) {
   $environments = (array) variable_get('environment', array());
@@ -137,7 +140,9 @@ function environment_drush_render_current($workflow = NULL) {
     foreach ($states as $state) {
       if (is_null($workflow) || $state['workflow'] == $workflow) {
         if (!drush_get_context('DRUSH_PIPE')) {
-          $items[] = array(environment_drush_render_environment($state, is_null($workflow), TRUE));
+          $items[] = array(
+            environment_drush_render_environment($state, is_null($workflow), TRUE),
+          );
         }
         else {
           $items[] = $state['name'];
@@ -146,26 +151,25 @@ function environment_drush_render_current($workflow = NULL) {
     }
   }
 
-
   return $items;
 }
 
 /**
  * Render the specified environment definition as a descriptive one-liner.
  *
- * @param $state
- *  Array defining an environment state.
- * @param $show_workflow
- *  Optional; default to TRUE. If there are more than one workflows defined in
- *  the system, will prefix the return with the workflow's label. If set to FALSE
- *  this is skipped. This is separate from $verbose because you could want a
- *  verbose description in a workflow-specific context.
- * @param $verbose
- *  Optional; defaults to FALSE. If TRUE, will include the environment
- *  description.
+ * @param array $state
+ *   Array defining an environment state.
+ * @param bool $show_workflow
+ *   Optional; default to TRUE. If there are more than one workflows defined in
+ *   the system, will prefix the return with the workflow's label. If set to
+ *   FALSE this is skipped. This is separate from $verbose because you could
+ *   want a verbose description in a workflow-specific context.
+ * @param bool $verbose
+ *   Optional; defaults to FALSE. If TRUE, will include the environment
+ *   description.
  *
- * @return
- *  String describing the specified environment.
+ * @return string
+ *   String describing the specified environment.
  */
 function environment_drush_render_environment($state, $show_workflow = TRUE, $verbose = FALSE) {
   $description = $verbose && isset($state['description']) ? ': ' . $state['description'] : '';

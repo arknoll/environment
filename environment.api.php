@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @file
- *  Hooks provided by Environment.
+ * Hooks provided by Environment.
  */
 
 /**
@@ -24,19 +23,19 @@
  * careful that you do not *disable* any modules in one environment that
  * implement a necessary instance of hook_environment_switch().
  *
- * @param $target_env
- *  The name of the environment being activated.
- * @param $current_env
- *  The name of the environment being deactivated.
- * @param $workflow
- *  The name of the environment workflow whose current state is being switched.
- *  A "NULL" workflow is the default/generic/unspecified workflow for the site.
+ * @param string $target_env
+ *   The name of the environment being activated.
+ * @param string $current_env
+ *   The name of the environment being deactivated.
+ * @param string $workflow
+ *   The name of the environment workflow whose current state is being switched.
+ *   A "NULL" workflow is the default/generic/unspecified workflow for the site.
  *
- * @return
- *  String summarizing changes made for drush user.
+ * @return string
+ *   String summarizing changes made for drush user.
  */
 function hook_environment_switch($target_env, $current_env, $workflow = NULL) {
-  // Declare each optional development-related module
+  // Declare each optional development-related module.
   $devel_modules = array(
     'devel',
     'devel_generate',
@@ -48,6 +47,7 @@ function hook_environment_switch($target_env, $current_env, $workflow = NULL) {
       module_disable($devel_modules);
       drupal_set_message('Disabled development modules');
       return;
+
     case 'development':
       module_enable($devel_modules);
       drupal_set_message('Enabled development modules');
@@ -61,15 +61,16 @@ function hook_environment_switch($target_env, $current_env, $workflow = NULL) {
  * This hook is to facilitate UI building and restricting environment switch to
  * known environments.
  *
- * @return
- *  Array of environment names in the format:
- *  - label: Human-readable name for the environment.
- *  - description: Description of the environment and it's purpose.
- *  - workflow: Tag the state with the machine name of the environment workflow.
- *  - allowed: Central definition of permitted operations for the
- *    environment_allowed() function. Default FALSE indicates that something
- *    should not happen, such as show the user a debugging message. Different
- *    categories can be specified for different rulesets.
+ * @return array
+ *   Array of environment names in the format:
+ *   - label: Human-readable name for the environment.
+ *   - description: Description of the environment and it's purpose.
+ *   - workflow: Tag the state with the machine name of the environment
+ *     workflow.
+ *   - allowed: Central definition of permitted operations for the
+ *     environment_allowed() function. Default FALSE indicates that something
+ *     should not happen, such as show the user a debugging message. Different
+ *     categories can be specified for different rulesets.
  *
  * @see environment_allowed
  */
@@ -82,7 +83,7 @@ function hook_environment() {
     'allowed' => array(
       'default' => FALSE,
       'email' => FALSE,
-    ),       
+    ),
   );
   $environment['internal'] = array(
     'label' => t('Internal-only site'),
@@ -103,8 +104,8 @@ function hook_environment() {
  *
  * This is especially useful to modify the defined allowed operations.
  *
- * @param $environments
- *  Defined environment states.
+ * @param array $environments
+ *   Defined environment states.
  */
 function hook_environment_alter(&$environments) {
   $environments['production'] = t('Production site');
@@ -126,14 +127,14 @@ function hook_environment_alter(&$environments) {
  * functional development vs. front-end design, or administrative review stages
  * of the site as a software project.
  *
- * @return Array
- *  Array of workflows indexed on machine name. Supported elements include:
- *  - label: The human-readable name for the workflow.
- *  - description: Extended description of the workflow.
+ * @return array
+ *   Array of workflows indexed on machine name. Supported elements include:
+ *   - label: The human-readable name for the workflow.
+ *   - description: Extended description of the workflow.
  */
 function hook_environment_workflow() {
   $workflows = array();
-  
+
   $workflows['public'] = array(
     'label' => t('Publicly accessible'),
   );
@@ -144,15 +145,15 @@ function hook_environment_workflow() {
   $workflows['review'] = array(
     'label' => t('Administrative review'),
   );
-  
+
   return $workflows;
 }
 
 /**
  * Alter the workflows as defined.
  *
- * @param $workflows
- *  Array of defined workflows.
+ * @param array $workflows
+ *   Array of defined workflows.
  */
 function hook_environment_workflow_alter(&$workflows) {
   $workflows['public']['label'] = t('Publicly visible status');

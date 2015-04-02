@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function environment_install() {
   // New module weights in core: put environment as the very last in the chain.
@@ -14,7 +14,7 @@ function environment_install() {
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function environment_uninstall() {
   variable_del('environment');
@@ -22,7 +22,7 @@ function environment_uninstall() {
 }
 
 /**
- * Implementation of hook_requirements().
+ * Implements hook_requirements().
  */
 function environment_requirements($phase) {
   $requirements = array();

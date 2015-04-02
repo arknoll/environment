@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function environment_menu() {
   $items = array();
@@ -35,7 +35,7 @@ function environment_menu() {
 }
 
 /**
- * Implementation of hook_environment().
+ * Implements hook_environment().
  */
 function environment_environment() {
   return array(
@@ -55,13 +55,13 @@ function environment_environment() {
 }
 
 /**
- * Implementation of hook_environment_workflow().
+ * Implements hook_environment_workflow().
  */
 function environment_environment_workflow() {
   return array(
     'default' => array(
       'label' => t('Default'),
-      'description' => t(''),
+      'description' => '',
     ),
   );
 }
@@ -69,16 +69,18 @@ function environment_environment_workflow() {
 /**
  * Check if something is allowed in the current environment.
  *
- * @param $name
+ * @param string $name
  *   Name of the thing to check if allowed, eg. function.
- * @param $category
- *   Optional; category of the thing to check for, eg. name of module. Defaults to 'other'.
- * @param $default
- *   Optional; what the default should be if no environment value is found. Defaults to FALSE.
- * @param $workflow
+ * @param string $category
+ *   Optional; category of the thing to check for, eg. name of module.
+ *   Defaults to 'other'.
+ * @param bool $default
+ *   Optional; what the default should be if no environment value is found.
+ *   Defaults to FALSE.
+ * @param string $workflow
  *   Optional; specify the workflow state to check for allowance.
  *
- * @return
+ * @return bool
  *   TRUE or FALSE for whether the thing is allowed.
  */
 function environment_allowed($name, $category = 'other', $default = FALSE, $workflow = 'default') {
@@ -106,13 +108,14 @@ function environment_allowed($name, $category = 'other', $default = FALSE, $work
 /**
  * Switches between two environments.
  *
- * @param String $target_env
+ * @param string $target_env
  *   Name of the environment to change to.
- * @param Boolean $force
- *   (optional) Whether to trigger a change even if the environment is the currently set one. Defaults to FALSE.
+ * @param bool $force
+ *   (optional) Whether to trigger a change even if the environment is the
+ *   currently set one. Defaults to FALSE.
  *
- * @return
- *   Return messages telling what has happened.
+ * @return bool
+ *   Return TRUE if successful.
  */
 function environment_switch($target_env, $force = FALSE, $clear_cache = TRUE) {
   $result = FALSE;
@@ -127,8 +130,8 @@ function environment_switch($target_env, $force = FALSE, $clear_cache = TRUE) {
     drupal_set_message(t("The current environment is already set to '!environment'.",
                          array('!environment' => $target_env)), 'notice');
 
-   $result = TRUE;
-    // Since this option is only available in drush, only display it to drush users.
+    $result = TRUE;
+    // This option is only available in drush.
     if (function_exists('drush_print')) {
       drush_print("To force the environment switch to run anyway, use the '--force' flag.");
     }
@@ -136,7 +139,7 @@ function environment_switch($target_env, $force = FALSE, $clear_cache = TRUE) {
   if (!$force && !empty($override)) {
     drupal_set_message(t("The current environment is overriden with '!override'.",
                          array('!override' => $override)), 'error');
-    // Since this option is only available in drush, only display it to drush users.
+    // This option is only available in drush.
     if (function_exists('drush_print')) {
       drush_print("To force the environment switch to run anyway, use the '--force' flag.");
     }
@@ -164,16 +167,16 @@ function environment_switch($target_env, $force = FALSE, $clear_cache = TRUE) {
 /**
  * Gets the current environment.
  *
- * @param $workflow
- *  (default: default) Specify an environment workflow to check. If NULL, will
- *  return the current environment state for each workflow. Default workflow
- *  will check environment states not assigned an explicit workflow, this
- *  maintains backwards compatibility.
- * @param $default
- *  Optional; defaults to NULL. Specify the default value if the current
- *  environment cannot be identified.
- * @param $load
- *  (default: FALSE) If TRUE, loads the full environment definition.
+ * @param string $workflow
+ *   (default: default) Specify an environment workflow to check. If NULL, will
+ *   return the current environment state for each workflow. Default workflow
+ *   will check environment states not assigned an explicit workflow, this
+ *   maintains backwards compatibility.
+ * @param string $default
+ *   Optional; defaults to NULL. Specify the default value if the current
+ *   environment cannot be identified.
+ * @param bool $load
+ *   (default: FALSE) If TRUE, loads the full environment definition.
  */
 function environment_current($workflow = 'default', $default = NULL, $load = FALSE) {
   $current = variable_get('environment', array());
@@ -185,7 +188,7 @@ function environment_current($workflow = 'default', $default = NULL, $load = FAL
     $current = empty($current) ? $default : $current;
     return $load ? environment_load($current) : $current;
   }
-  elseif(isset($current[$workflow])) {
+  elseif (isset($current[$workflow])) {
     $current[$workflow] = empty($current[$workflow]) ? $default : $current[$workflow];
     return $load ? environment_load($current[$workflow]) : $current[$workflow];
   }
@@ -196,8 +199,8 @@ function environment_current($workflow = 'default', $default = NULL, $load = FAL
 /**
  * Save the new environment to it's assigned workflow.
  *
- * @param $new_env
- *  Machine name of the new system environment. If environment has a workflow
+ * @param string $new_env
+ *   Machine name of the new system environment. If environment has a workflow.
  */
 function environment_set($new_env) {
   $environment = variable_get('environment', array());
@@ -215,13 +218,13 @@ function environment_set($new_env) {
 /**
  * Fetches all available environments.
  *
- * @param $env
+ * @param string $env
  *   (optional) Name of the environment. If NULL, will return all environments.
  *   If an array, will return all environments specified in the array.
- * @param $reset
+ * @param bool $reset
  *   (default: FALSE) Reset the static cache and collect new data.
  *
- * @return
+ * @return array
  *   Return all environments or the specified environment.
  */
 function environment_load($env = NULL, $reset = FALSE) {
@@ -253,13 +256,14 @@ function environment_load($env = NULL, $reset = FALSE) {
 /**
  * Get the current assortment of Workflows.
  *
- * @param $name
- *  Name of the workflow to retrieve information on.
- *  Use 'default' to specify default or NULL workflow.
- * @param $reset
- *  Optional; reset the static cache.
+ * @param string $name
+ *   Name of the workflow to retrieve information on.
+ *   Use 'default' to specify default or NULL workflow.
+ * @param bool $reset
+ *   Optional; reset the static cache.
  *
- * @return Array
+ * @return array
+ *   Workflows.
  */
 function environment_load_workflow($name = NULL, $reset = FALSE) {
   static $workflows;
@@ -272,22 +276,20 @@ function environment_load_workflow($name = NULL, $reset = FALSE) {
   return isset($name) ? $workflows[$name] : $workflows;
 }
 
-
-
 /**
  * Provides environment form options.
  *
- * @param $workflow
- *  Optional; specify the workflow for specific options. Defaults to states
- *  that are not part of an explicit workflow.
- * @param $prefix
- *  Optional; prefix the environment label with the specified string. Defaults
- *  to no prefix.
- * @param $reset
- *  Optional; reset the static cache.
+ * @param string $workflow
+ *   Optional; specify the workflow for specific options. Defaults to states
+ *   that are not part of an explicit workflow.
+ * @param string $prefix
+ *   Optional; prefix the environment label with the specified string. Defaults
+ *   to no prefix.
+ * @param bool $reset
+ *   Optional; reset the static cache.
  *
- * @return
- *  Array of form options in the style of environment => label
+ * @return array
+ *   Array of form options in the style of environment => label
  */
 function _environment_state_options($workflow = 'default', $prefix = '', $reset = FALSE) {
   static $options;
@@ -309,8 +311,11 @@ function _environment_state_options($workflow = 'default', $prefix = '', $reset 
  * If the same environment needs to come up in multiple places, that should be
  * handled by duplicating the definition and changing the machine name.
  *
- * @param $reset
- *  Optional; reset the static cache.
+ * @param bool $reset
+ *   Optional; reset the static cache.
+ *
+ * @return array
+ *   Options widget.
  *
  * @see hook_environment
  */
@@ -328,7 +333,7 @@ function _environment_state_options_all($reset = FALSE) {
 }
 
 /**
- * Implementation of hook_token_list().
+ * Implements hook_token_list().
  */
 function environment_token_list($type = 'all') {
   $tokens = array();
@@ -342,7 +347,7 @@ function environment_token_list($type = 'all') {
 }
 
 /**
- * Implementation of hook_token_values().
+ * Implements hook_token_values().
  */
 function environment_token_values($type, $object = NULL, $options = array()) {
   $values = array();

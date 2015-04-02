@@ -1,13 +1,20 @@
 <?php
 
 /**
- * @file Settings for Environment Read Only module
+ * @file
+ * Settings for Environment Read Only module
  */
 
+/**
+ * Admin settings form.
+ *
+ * @return array
+ *   Form.
+ */
 function environment_readonly_admin_settings() {
   $form = array();
 
-  // Build the role selection section
+  // Build the role selection section.
   $roles = user_roles();
   $role_default_value = _environment_readonly_get_configured_roles();
   $form['roles'] = array(
@@ -24,7 +31,7 @@ function environment_readonly_admin_settings() {
     '#default_value' => $role_default_value,
   );
 
-  // Build the permission selection section
+  // Build the permission selection section.
   $perms = _environment_readonly_get_perms();
   $perms_default_value = _environment_readonly_get_action_perms();
   $form['perms'] = array(

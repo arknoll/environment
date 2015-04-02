@@ -1,15 +1,16 @@
 <?php
 /**
- * @file Context for environment readonly
+ * @file
+ * Context for environment readonly
  */
 
 /**
- * Implementation of hook_context_default_contexts().
+ * Implements hook_context_default_contexts().
  */
 function environment_readonly_context_default_contexts() {
   $export = array();
 
-  $context = new stdClass;
+  $context = new stdClass();
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
   $context->name = 'environment_readonly_alert';
@@ -46,7 +47,6 @@ function environment_readonly_context_default_contexts() {
   t('Displays a message to authenticated users when the site is in read only mode');
   t('Environment');
   $export['environment_readonly_alert'] = $context;
-
 
   return $export;
 }
