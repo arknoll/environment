@@ -28,18 +28,29 @@ function environment_requirements($phase) {
   $requirements = array();
   if ($phase == 'runtime') {
     $t = get_t();
-    if (variable_get('environment_require_override', FALSE)) {
-      $requirements['environment_require_override'] = array(
-        'title'       => $t('Environment Override'),
-        'description' => $t("You should override the 'environment_override' variable in your settings.php file to indicate the server environment this site is in."),
-        'value'       => $t('Missing'),
-        'severity'    => REQUIREMENT_ERROR,
-      );
-    }
 
     $environment = (array) variable_get('environment', array());
     $env_override = (array) variable_get('environment_override', array());
     $workflows = environment_load_workflow();
+
+    if (variable_get('environment_require_override', FALSE)) {
+      if (empty($env_override)) {
+        $requirements['environment_require_override'] = array(
+          'title'       => $t('Environment Override'),
+          'description' => $t("You should override the 'environment_override' variable in your settings.php file to indicate the server environment this site is in."),
+          'value'       => $t('Missing'),
+          'severity'    => REQUIREMENT_ERROR,
+        );
+      }
+      else {
+        $requirements['environment_require_override'] = array(
+          'title'       => $t('Environment Override'),
+          'description' => $t("The 'environment_override' variable is properly set in settings.php or elsewhere."),
+          'value'       => $t('Exists'),
+          'severity'    => REQUIREMENT_OK,
+        );
+      }
+    }
 
     if (empty($environment)) {
       $requirements['environment'] = array(
