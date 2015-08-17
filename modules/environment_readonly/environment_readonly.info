@@ -1,6 +1,0 @@
-core = "7.x"
-dependencies[] = "environment"
-description = "Provides a Read Only environment state"
-name = "Read Only Environment"
-recommends[] = "context"
-stylesheets[all][] = "environment_readonly.css"

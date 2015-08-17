@@ -10,13 +10,16 @@
 function environment_drush_command() {
   $items = array();
 
-  $items['environment-show'] = array(
-    'description' => 'Show the current environment state.',
-    'arguments' => array(
-      'workflow' => 'Specify the workflow whose current environment state you wish to check. Leave blank for all workflows.',
-    ),
+  $items['environment-list'] = array(
+    'description' => 'Show all environments.',
     'drupal dependencies' => array('environment'),
-    'aliases' => array('env', 'env-show', 'environment'),
+    'aliases' => array('env-list'),
+  );
+
+  $items['environment-current'] = array(
+    'description' => 'Show the current environment state.',
+    'drupal dependencies' => array('environment'),
+    'aliases' => array('env', 'env-current', 'environment'),
   );
 
   $items['environment-switch'] = array(
@@ -61,10 +64,47 @@ function environment_drush_help($section) {
 
 /**
  * Implements drush_hook_COMMAND for environment.
+ *
+ * Render all current environments with full description.
  */
-function drush_environment_show($workflow = NULL) {
-  $func = drush_get_context('DRUSH_PIPE') ? 'drush_print_pipe' : 'drush_print_table';
-  $func(environment_drush_render_current($workflow));
+function drush_environment_list() {
+  $environments = environment_load();
+
+  $drush_context = drush_get_context('DRUSH_PIPE') ? 'drush_print_pipe' : 'drush_print_table';
+
+  if (isset($environments)) {
+    $items = array();
+    foreach ($environments as $environment) {
+      $items[$environment->get('id')] = $environment->get('label');
+    }
+
+    if ($drush_context == 'drush_print_pipe') {
+      drush_print_pipe($items);
+    }
+    else {
+      drush_print_table(drush_key_value_to_array_table($items));
+    }
+  }
+  return;
+}
+
+/**
+ * Implements drush_hook_COMMAND for environment.
+ *
+ * Render current environment with full description.
+ *
+ * @return array
+ *   Array of strings describing the environment(s).
+ */
+function drush_environment_current() {
+  $environment_id = \Drupal::config('environment.settings')->get('environment');
+
+  $environment = environment_load($environment_id);
+
+  if (isset($environment)) {
+    return drush_format($environment->get('label'));
+  }
+  return;
 }
 
 /**
@@ -117,44 +157,6 @@ function drush_environment_switch($target_env = NULL) {
 }
 
 /**
- * Render all current environment states with full description.
- *
- * @param string $workflow
- *   Optional; specify a single workflow whose environment to check. Otherwise
- *   show all states.
- *
- * @return array
- *   Array of strings describing the environment(s).
- */
-function environment_drush_render_current($workflow = NULL) {
-  $environments = (array) variable_get('environment', array());
-  foreach ($environments as $environment) {
-    $states[] = environment_load($environment);
-  }
-
-  $items = array();
-  if (empty($states)) {
-    drush_log('Your site environment is not set.', 'warning');
-  }
-  else {
-    foreach ($states as $state) {
-      if (is_null($workflow) || $state['workflow'] == $workflow) {
-        if (!drush_get_context('DRUSH_PIPE')) {
-          $items[] = array(
-            environment_drush_render_environment($state, is_null($workflow), TRUE),
-          );
-        }
-        else {
-          $items[] = $state['name'];
-        }
-      }
-    }
-  }
-
-  return $items;
-}
-
-/**
  * Render the specified environment definition as a descriptive one-liner.
  *
  * @param array $state
@@ -171,14 +173,7 @@ function environment_drush_render_current($workflow = NULL) {
  * @return string
  *   String describing the specified environment.
  */
-function environment_drush_render_environment($state, $show_workflow = TRUE, $verbose = FALSE) {
-  $description = $verbose && isset($state['description']) ? ': ' . $state['description'] : '';
-  $prefix = '';
+function environment_drush_render_environment($environment, $verbose = FALSE) {
 
-  if ($show_workflow) {
-    $workflows = environment_load_workflow();
-    $prefix .= count($workflows) > 1 ? $workflows[$state['workflow']]['label'] . ' : ' : '';
-  }
-
-  return $prefix . $state['label'] . ' (' . $state['name'] . ')' . $description;
+  return $environment->get('label') . ' (' . $environment->get('id') . ')';
 }

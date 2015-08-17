@@ -1,5 +1,0 @@
-name = "Environment Context"
-description = "Use environment setting within context"
-core = "7.x"
-dependencies[] = "environment"
-dependencies[] = "context"

@@ -5,20 +5,23 @@
  * Handles installation of the Environment module.
  */
 
+use Drupal\Core\Url;
+
 /**
  * Implements hook_install().
  */
 function environment_install() {
   // New module weights in core: put environment as the very last in the chain.
-  db_query("UPDATE {system} SET weight = -100 WHERE name = 'environment'");
+  //db_query("UPDATE {system} SET weight = -100 WHERE name = 'environment'");
 }
 
 /**
  * Implements hook_uninstall().
  */
 function environment_uninstall() {
-  variable_del('environment');
-  variable_del('environment_require_override');
+
+  \Drupal::config('environment.settings')->clear('environment_override')->save();
+  \Drupal::config('environment.settings')->clear('environment_require_override')->save();
 }
 
 /**
@@ -27,13 +30,15 @@ function environment_uninstall() {
 function environment_requirements($phase) {
   $requirements = array();
   if ($phase == 'runtime') {
-    $t = get_t();
+    $t = 't';
 
-    $environment = (array) variable_get('environment', array());
-    $env_override = (array) variable_get('environment_override', array());
-    $workflows = environment_load_workflow();
+    $env_req_override = \Drupal::config('environment.settings')->get('environment_require_override');
+    $env_current = environment_current(TRUE);
 
-    if (variable_get('environment_require_override', FALSE)) {
+    if ($env_req_override) {
+
+      $env_override = \Drupal::config('environment.settings')->get('environment_override');
+
       if (empty($env_override)) {
         $requirements['environment_require_override'] = array(
           'title'       => $t('Environment Override'),
@@ -52,45 +57,21 @@ function environment_requirements($phase) {
       }
     }
 
-    if (empty($environment)) {
+    if (empty($env_current)) {
       $requirements['environment'] = array(
         'title'       => $t('Environment'),
-        'description' => $t('The environment is not set in your system.', array()),
+        'description' => $t('The environment is not set in your system.'),
         'value'       => $t('Invalid State'),
         'severity'    => REQUIREMENT_WARNING,
       );
     }
-
-    foreach ($workflows as $name => $workflow) {
-      if (!empty($environment[$name])) {
-        $status = environment_load($environment[$name]);
-      }
-      $key = empty($name) ? 'default' : $name;
-      if (isset($env_override[$name]) && $env_override[$name] != $environment['name']) {
-        $requirements['environment_override_' . $key] = array(
-          'title'       => $t('Environment Mismatch for @workflow workflow', array('@workflow' => $workflow['label'])),
-          'description' => $t("The environment override set in your settings.php file does not match the current system environment. Please !link or correct this setting.", array('!link' => l($t('switch environments'), 'admin/settings/environment/switch/' . $env_override))),
-          'value'       => $t('Mismatch'),
-          'severity'    => REQUIREMENT_ERROR,
-        );
-      }
-      if (!empty($environment[$name]) && empty($status)) {
-        $requirements['environment_' . $key] = array(
-          'title'       => $t('Environment'),
-          'description' => $t("The current environment '%environment' is no longer defined in your system.", array('%environment' => $environment)),
-          'value'       => $t('Invalid State'),
-          'severity'    => REQUIREMENT_WARNING,
-        );
-      }
-      elseif (!empty($environment[$name])) {
-        $environment = environment_load($environment[$name]);
-        $requirements['environment_' . $key] = array(
-          'title'       => $t('Environment'),
-          'description' => isset($environment['description']) ? $environment['description'] : '',
-          'value'       => $environment['label'],
-          'severity'    => REQUIREMENT_INFO,
-        );
-      }
+    else {
+      $requirements['environment_' . $key] = array(
+        'title'       => $t('Environment'),
+        'description' => $env_current->get('id'),
+        'value'       => $env_current->get('label'),
+        'severity'    => REQUIREMENT_INFO,
+      );
     }
   }
   return $requirements;
