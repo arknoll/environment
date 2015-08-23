@@ -38,10 +38,12 @@ class EnvironmentSwitchConfirm extends FormBase {
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $environment_service = \Drupal::service('environment.environment_service');
+
     if (isset($form['environment'])) {
       foreach ($form['environment'] as $workflow => $environment) {
         if ($form_state->getValue(['environment', $workflow]) != $form['environment'][$workflow]) {
-          environment_switch($form_state->getValue(['environment', $workflow]), $workflow);
+          $environment_service->environment_switch($form_state->getValue(['environment', $workflow]), $workflow);
         }
       }
     }

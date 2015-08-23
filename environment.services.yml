@@ -3,3 +3,6 @@ services:
     class: Drupal\environment\EventSubscriber\EnvironmentSubscriber
     tags:
       - {name: event_subscriber}
+
+    environment.environment_service:
+      class: Drupal\environment\EnvironmentService

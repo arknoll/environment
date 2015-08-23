@@ -12,9 +12,10 @@ class EnvironmentSubscriber implements EventSubscriberInterface {
     if ($env_req_override) {
       $env_override = \Drupal::config('environment.settings')->get('environment_override');
       if (!empty($env_override)) {
-        $current_env = environment_current(FALSE);
+        $environment_service = \Drupal::service('environment.environment_service');
+        $current_env = $environment_service->environment_current(FALSE);
         if ($current_env != $env_override) {
-          environment_switch($env_override, TRUE);
+          $environment_service->environment_switch($env_override, TRUE);
         }
       }
     }

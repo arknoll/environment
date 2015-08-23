@@ -24,7 +24,9 @@ class EnvironmentAdminSettings extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    environment_switch($form_state->getValue('environments'));
+    $environment_service = \Drupal::service('environment.environment_service');
+
+    $environment_service->environment_switch($form_state->getValue('environments'));
 
     $env_override = $form_state->getValue('environment_require_override');
 
@@ -45,7 +47,9 @@ class EnvironmentAdminSettings extends ConfigFormBase {
     $form = [];
 
     $env_req_override = \Drupal::config('environment.settings')->get('environment_require_override');
-    $env_current = environment_current(FALSE);
+    $environment_service = \Drupal::service('environment.environment_service');
+
+    $env_current = $environment_service->environment_current(FALSE);
 
     if (!$env_current) {
       drupal_set_message($this->t('Not in a valid environment. Saving this form will put it into a valid environment if one exists.'), 'warning');
@@ -73,7 +77,7 @@ class EnvironmentAdminSettings extends ConfigFormBase {
         '#title' => $this->t('Select an environment'),
         '#description' => $this->t('This is the environment you want to switch to.'),
         '#type' => 'select',
-        '#options' => _environment_options(),
+        '#options' => $environment_service->_environment_options(),
         '#default_value' => $env_current,
       ];
     }

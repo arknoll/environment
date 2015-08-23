@@ -68,7 +68,9 @@ function environment_drush_help($section) {
  * Render all current environments with full description.
  */
 function drush_environment_list() {
-  $environments = environment_load();
+  $environment_service = \Drupal::service('environment.environment_service');
+
+  $environments = $environment_service->environment_load();
 
   $drush_context = drush_get_context('DRUSH_PIPE') ? 'drush_print_pipe' : 'drush_print_table';
 
@@ -99,7 +101,8 @@ function drush_environment_list() {
 function drush_environment_current() {
   $environment_id = \Drupal::config('environment.settings')->get('environment');
 
-  $environment = environment_load($environment_id);
+  $environment_service = \Drupal::service('environment.environment_service');
+  $environment = $environment_service->environment_load($environment_id);
 
   if (isset($environment)) {
     return drush_format($environment->get('label'));
@@ -111,7 +114,9 @@ function drush_environment_current() {
  * Implements drush_hook_COMMAND_validate() for environment_switch.
  */
 function drush_environment_switch_validate($target_env = NULL) {
-  $environments = environment_load();
+  $environment_service = \Drupal::service('environment.environment_service');
+  $environments = $environment_service->environment_load();
+
   if (empty($environments)) {
     return drush_set_error('DRUSH_ENVIRONMENT_ERROR', dt('There are no defined environments available.'));
   }
@@ -121,12 +126,14 @@ function drush_environment_switch_validate($target_env = NULL) {
  * Implements drush_hook_COMMAND for environment_switch.
  */
 function drush_environment_switch($target_env = NULL) {
+  $environment_service = \Drupal::service('environment.environment_service');
+
   if ($target_env && !array_key_exists($target_env, environment_load())) {
     drush_set_error('DRUSH_ENVIRONMENT_ERROR', dt('Invalid environment specified.'));
     $target_env = NULL;
   }
   if (!$target_env) {
-    $environments = environment_load();
+    $environments = $environment_service->environment_load();
     $options = array();
     foreach ($environments as $name => $env) {
       $options[$name] = environment_drush_render_environment($env);
@@ -142,7 +149,7 @@ function drush_environment_switch($target_env = NULL) {
 
   drush_print(dt("Switching the environment to !environment", array('!environment' => $target_env)));
   if (!drush_get_context('DRUSH_SIMULATE')) {
-    $result = environment_switch($target_env, $force, !$no_cache_clear);
+    $result = $environment_service->environment_switch($target_env, $force, !$no_cache_clear);
   }
   else {
     $result = TRUE;
